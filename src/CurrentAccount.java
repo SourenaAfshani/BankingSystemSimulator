@@ -28,4 +28,8 @@ public class CurrentAccount extends BankAccount{
             System.out.println("موجودی کافی نیست.");
         }
     }
+    @Override
+    public String ShowAccountInfo(){
+        return "Owner's Name:"+" "+AccountOwnerName+" " + "Account Number:"+" "+GetAccountNumber()+"Account Balance"+" "+GetAccountBalance() +"OverDraftLimit"+" "+OverDraftLimit;
+    }
 }
