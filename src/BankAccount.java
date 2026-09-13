@@ -27,9 +27,8 @@ public abstract class BankAccount {
             System.out.println("موجودی کافی نیست.");
         }
     }
-    public String ShowAccountInfo(){
-       return "Owner's Name:"+" "+AccountOwnerName+" " + "Account Number:"+" "+AccountNumber+"Account Balance"+" "+AccountBalance;
-    }
+    public abstract String ShowAccountInfo();
+
     public void SetAccountBalance(float num1){
         AccountBalance=num1;
     }
