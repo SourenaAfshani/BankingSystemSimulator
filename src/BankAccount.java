@@ -1,4 +1,4 @@
-public class BankAccount {
+public abstract class BankAccount {
     private final int AccountNumber;
     private float AccountBalance;
     final String AccountOwnerName;
