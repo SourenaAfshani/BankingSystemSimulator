@@ -283,7 +283,7 @@ public class Main {
                     break;
                 case 11:
                     for(int i=0;i<Transactions.size();i++){
-                        System.out.print(Transactions.get(i).ShowTransactionInfo());
+                        System.out.println(Transactions.get(i).ShowTransactionInfo());
                     }
                     break;
                 case 12:
