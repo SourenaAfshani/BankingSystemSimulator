@@ -1,26 +1,19 @@
 import java.util.Scanner;
 import java.util.Random;
+import java.util.ArrayList;
 
 
 public class Main {
     public static void main(String[] args) {
         Scanner input=new Scanner(System.in);
         Random random = new Random();
-        BankAccount[] Accounts=new BankAccount[4];
-        int RegisteredAccounts=0;
+        ArrayList<BankAccount> Accounts=new ArrayList<BankAccount>();
         SourenaBankingProject:
         while(true){
         Menu();
         int InputMenu=input.nextInt();
         switch(InputMenu){
             case 1:
-                if(RegisteredAccounts>=Accounts.length*0.75) {
-                    BankAccount[] Accounts2 = new BankAccount[Accounts.length * 2];
-                    for (int i = 0; i < RegisteredAccounts; i++) {
-                        Accounts2[i] = Accounts[i];
-                    }
-                    Accounts = Accounts2;
-                }
                 System.out.println("نام سازنده حساب را وارد کنید");
                 String AccountOwnerName=input.next();
                 System.out.println("موجودی اولیه را وارد کنید");
@@ -31,30 +24,28 @@ public class Main {
                 if(AccountType==1){
                     System.out.println("مقدار سود مدنظر برای این حساب بلند مدت را وارد کنید");
                     float InterestRate=input.nextFloat();
-                    Accounts[RegisteredAccounts]=new DepositAccount(AccountNumber,AccountBalance,AccountOwnerName,InterestRate);
+                    Accounts.add(new DepositAccount(AccountNumber,AccountBalance,AccountOwnerName,InterestRate));
                     System.out.println("حساب جدید با موفقیت ثبت شد.");
-                    RegisteredAccounts++;
                 }
                 else if(AccountType==2){
                     System.out.println("مقدار سقف اضافه برداشت را برای این حساب جاری وارد کنید");
                     double OverDraftLimit=input.nextDouble();
-                    Accounts[RegisteredAccounts]=new CurrentAccount(AccountNumber,AccountBalance,AccountOwnerName,OverDraftLimit);
+                    Accounts.add(new CurrentAccount(AccountNumber,AccountBalance,AccountOwnerName,OverDraftLimit));
                     System.out.println("حساب جدید با موفقیت ثبت شد.");
-                    RegisteredAccounts++;
                 }
                 break ;
             case 2:
-                for(int i=0;i<RegisteredAccounts;i++){
-                    System.out.println("َAccount Creator:"+Accounts[i].AccountOwnerName+"   ");
-                    if(Accounts[i] instanceof DepositAccount){
+                for(int i=0;i<Accounts.size();i++){
+                    System.out.println("َAccount Creator:"+Accounts.get(i).AccountOwnerName+"   ");
+                    if(Accounts.get(i) instanceof DepositAccount){
                         System.out.println("Account Type is DepositAccount ");
                     }
-                    else if(Accounts[i] instanceof CurrentAccount){
+                    else if(Accounts.get(i) instanceof CurrentAccount){
                         System.out.println("Account Type is CurrentAccount ");
 
                     }
-                    System.out.println("َAccount Number:"+Accounts[i].GetAccountNumber()+"   ");
-                    System.out.println("َAccount Balance:"+Accounts[i].GetAccountBalance()+"   ");
+                    System.out.println("َAccount Number:"+Accounts.get(i).GetAccountNumber()+"   ");
+                    System.out.println("َAccount Balance:"+Accounts.get(i).GetAccountBalance()+"   ");
 
 
                 }
@@ -63,12 +54,12 @@ public class Main {
                 System.out.println("شماره ی کارتی که قصد واریز وجه را به آن دارید وارد کنید (8رقمی)");
                 int AccountNumberInput=input.nextInt();
                 boolean AccountFound=false;
-                for (int i=0;i<RegisteredAccounts;i++) {
-                    if (Accounts[i].GetAccountNumber() == AccountNumberInput) {
+                for (int i=0;i<Accounts.size();i++) {
+                    if (Accounts.get(i).GetAccountNumber() == AccountNumberInput) {
                         System.out.println("مبلغ مورد نظر برای واریزی را وارد کنید");
                         float TransferringValue= input.nextFloat();
-                        Accounts[i].Deposit(TransferringValue);
-                        System.out.println("New AccountBalance:"+"     "+Accounts[i].GetAccountBalance());
+                        Accounts.get(i).Deposit(TransferringValue);
+                        System.out.println("New AccountBalance:"+"     "+Accounts.get(i).GetAccountBalance());
                         AccountFound=true;
                         break;
                     }
@@ -83,11 +74,11 @@ public class Main {
                 System.out.println("شماره کارتی که قصد واریز وجه را به آن دارید را وارد کنید(8 رقمی)");
                 int AccountNumberInput2=input.nextInt();
                 boolean AccountFound2=false;
-                for (int i = 0; i<RegisteredAccounts; i++) {
-                    if(Accounts[i].GetAccountNumber()==AccountNumberInput2){
+                for (int i = 0; i<Accounts.size(); i++) {
+                    if(Accounts.get(i).GetAccountNumber()==AccountNumberInput2){
                         System.out.println("مبلغی که میخواهید برداشت شود را وارد کنید.");
                         float TransferringValue2=input.nextFloat();
-                        Accounts[i].Withdraw(TransferringValue2);
+                        Accounts.get(i).Withdraw(TransferringValue2);
                         AccountFound2=true;
                         break;
 
@@ -105,9 +96,9 @@ public class Main {
                 int TransferFirstC=input.nextInt();
                 System.out.println("شماره کارت مقصد را وارد کنید");
                 int TransferSecondC=input.nextInt();
-                for (int i = 0; i<RegisteredAccounts ; i++) {
-                    if(Accounts[i].GetAccountNumber()==TransferFirstC){
-                         Sender=Accounts[i];
+                for (int i = 0; i<Accounts.size() ; i++) {
+                    if(Accounts.get(i).GetAccountNumber()==TransferFirstC){
+                         Sender=Accounts.get(i);
                         break;
                     }
 
@@ -115,9 +106,9 @@ public class Main {
                 if (Sender == null) {
                     System.out.println("شماره کارت مبدا اشتباه است");
                 }
-                for(int i=0;i<RegisteredAccounts;i++){
-                    if(Accounts[i].GetAccountNumber()==TransferSecondC){
-                         Receiver=Accounts[i];
+                for(int i=0;i<Accounts.size();i++){
+                    if(Accounts.get(i).GetAccountNumber()==TransferSecondC){
+                         Receiver=Accounts.get(i);
                         break;
                     }
                 }
@@ -138,11 +129,11 @@ public class Main {
                 System.out.println("شماره کارت را وارد کنید");
                 boolean AccountNumberFound=false;
                 int CardNumberInput=input.nextInt();
-                for(int i=0;i<RegisteredAccounts;i++){
-                    if(Accounts[i].GetAccountNumber()==CardNumberInput){
-                        System.out.println("Account Owner:"+" "+Accounts[i].AccountOwnerName);
-                        System.out.println("Account Number:"+" "+Accounts[i].GetAccountNumber());
-                        System.out.println("Account Balance:"+" "+Accounts[i].GetAccountBalance());
+                for(int i=0;i<Accounts.size();i++){
+                    if(Accounts.get(i).GetAccountNumber()==CardNumberInput){
+                        System.out.println("Account Owner:"+" "+Accounts.get(i).AccountOwnerName);
+                        System.out.println("Account Number:"+" "+Accounts.get(i).GetAccountNumber());
+                        System.out.println("Account Balance:"+" "+Accounts.get(i).GetAccountBalance());
                         AccountNumberFound=true;
                         break ;
                     }
@@ -156,39 +147,39 @@ public class Main {
                 System.out.println("شماره کارت حساب مورد نظر خود را وارد کنید.");
                 int CardNumberInput2= input.nextInt();
                 boolean AccountNumberFound2=false;
-                for(int i=0;i<RegisteredAccounts;i++){
-                    if(Accounts[i].GetAccountNumber()==CardNumberInput2){
+                for(int i=0;i<Accounts.size();i++){
+                    if(Accounts.get(i).GetAccountNumber()==CardNumberInput2){
                         AccountNumberFound2=true;
                         Case7Menu();
                         int Case7Input= input.nextInt();
                         switch (Case7Input){
                             case 1:
-                                if(Accounts[i] instanceof DepositAccount){
+                                if(Accounts.get(i) instanceof DepositAccount){
                                     System.out.println("یک نرخ سقف برداشت برای حساب جاری وارد کنید");
                                     double OverDraftLimit= input.nextDouble();
-                                    Accounts[i]=new CurrentAccount(Accounts[i].GetAccountNumber(),
-                                            Accounts[i].GetAccountBalance(),
-                                            Accounts[i].AccountOwnerName,
-                                            OverDraftLimit);
+                                    Accounts.set(i,new CurrentAccount(Accounts.get(i).GetAccountNumber(),
+                                            Accounts.get(i).GetAccountBalance(),
+                                            Accounts.get(i).AccountOwnerName,
+                                            OverDraftLimit));
 
                                 }
-                                else if(Accounts[i] instanceof CurrentAccount){
+                                else if(Accounts.get(i) instanceof CurrentAccount){
                                     System.out.println("نرخ سود برای حساب بلند مدت وارد کنید");
                                     float InterestRateInput1=input.nextFloat();
-                                    Accounts[i]=new DepositAccount(Accounts[i].GetAccountNumber(),
-                                            Accounts[i].GetAccountBalance(),
-                                            Accounts[i].AccountOwnerName,
-                                            InterestRateInput1);
+                                    Accounts.set(i,new DepositAccount(Accounts.get(i).GetAccountNumber(),
+                                            Accounts.get(i).GetAccountBalance(),
+                                            Accounts.get(i).AccountOwnerName,
+                                            InterestRateInput1));
 
                                 }
                                 break;
                             case 2 :
                                 boolean AccountIsDeposit=false;
-                                if(Accounts[i] instanceof DepositAccount){
+                                if(Accounts.get(i) instanceof DepositAccount){
                                     AccountIsDeposit=true;
                                     System.out.println("نرخ سود جدید وارد کنید");
                                     float InterestRateInput2=input.nextFloat();
-                                   ((DepositAccount) Accounts[i]).InterestRate=InterestRateInput2;
+                                   ((DepositAccount) Accounts.get(i)).InterestRate=InterestRateInput2;
                                     System.out.println("نرخ سود جدید با موفقیت ثبت شد");
                                     break;
                                 }
@@ -198,11 +189,11 @@ public class Main {
                                 break;
                             case 3:
                                 boolean AccountIsCurrent=false;
-                                if(Accounts[i] instanceof CurrentAccount){
+                                if(Accounts.get(i) instanceof CurrentAccount){
                                     AccountIsCurrent=true;
                                     System.out.println("نرخ سقف برداشت جدید را وارد کنید");
                                     double OverDraftLimitInput=input.nextDouble();
-                                    ((CurrentAccount) Accounts[i]).OverDraftLimit=OverDraftLimitInput;
+                                    ((CurrentAccount) Accounts.get(i)).OverDraftLimit=OverDraftLimitInput;
                                     System.out.println("نرخ سقف برداشت جدید ثبت شد");
                                     break ;
                                 }
@@ -225,14 +216,10 @@ public class Main {
                 System.out.println("شماره کارت حساب مورد نظر خود را وارد کنید.");
                 int CardNumberInput3= input.nextInt();
                 boolean AccountNumberFound3=false;
-                for(int i=0;i<RegisteredAccounts;i++){
-                    if(Accounts[i].GetAccountNumber()==CardNumberInput3){
+                for(int i=0;i<Accounts.size();i++){
+                    if(Accounts.get(i).GetAccountNumber()==CardNumberInput3){
                         AccountNumberFound3=true;
-                        for(int j=i;j<RegisteredAccounts-1;j++){
-                            Accounts[j]=Accounts[j+1];
-                        }
-                        RegisteredAccounts--;
-                        Accounts[RegisteredAccounts]=null;
+                        Accounts.remove(i);
                         System.out.println("حساب با موفقیت حذف شد");
                         break;
                     }
@@ -244,11 +231,11 @@ public class Main {
             case 9:
                 int DepositCount=0;
                 int CurrentCount=0;
-                for(int i=0;i<RegisteredAccounts;i++){
-                    if(Accounts[i] instanceof DepositAccount){
+                for(int i=0;i<Accounts.size();i++){
+                    if(Accounts.get(i) instanceof DepositAccount){
                         DepositCount++;
                     }
-                    else if(Accounts[i] instanceof CurrentAccount){
+                    else if(Accounts.get(i) instanceof CurrentAccount){
                         CurrentCount++;
                     }
                 }
@@ -257,13 +244,13 @@ public class Main {
                 break ;
 
             case 10:
-                BankAccount[] TempArray=new BankAccount[RegisteredAccounts];
-                BankAccount[] TempArray2=new BankAccount[RegisteredAccounts];
+                BankAccount[] TempArray=new BankAccount[Accounts.size()];
+                BankAccount[] TempArray2=new BankAccount[Accounts.size()];
                 int ArrayIndex=0;
-                int RegisteredAccountsTemp =RegisteredAccounts;
+                int RegisteredAccountsTemp =Accounts.size();
 
-                for(int i=0;i<RegisteredAccounts;i++){
-                    TempArray[i]=Accounts[i];
+                for(int i=0;i<Accounts.size();i++){
+                    TempArray[i]=Accounts.get(i);
                 }
                 while(RegisteredAccountsTemp>0){
                     int HighestIndex=0;
@@ -284,7 +271,7 @@ public class Main {
 
                     TempArray[RegisteredAccountsTemp] = null;
                 }
-                for (int i=0;i<RegisteredAccounts;i++){
+                for (int i=0;i<Accounts.size();i++){
                     System.out.println(TempArray2[i].ShowAccountInfo());
                 }
                 break;
