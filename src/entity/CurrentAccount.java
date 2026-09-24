@@ -1,16 +1,18 @@
-public class CurrentAccount extends BankAccount{
-     double OverDraftLimit;
+package entity;
 
-    CurrentAccount(int AccountNumber, float AccountBalance, String AccountOwnerName,double OverDraftLimit) {
+public class CurrentAccount extends BankAccount{
+    double OverDraftLimit;
+
+    public CurrentAccount(int AccountNumber, float AccountBalance, String AccountOwnerName,double OverDraftLimit) {
         super(AccountNumber, AccountBalance, AccountOwnerName);
         this.OverDraftLimit=OverDraftLimit;
     }
     @Override
     public void Withdraw(float num ){
-        float AccountBalanceCurrent=GetAccountBalance();
+        float AccountBalanceCurrent=getAccountBalance();
         if(AccountBalanceCurrent + OverDraftLimit>=num) {
             AccountBalanceCurrent -= num;
-            SetAccountBalance(AccountBalanceCurrent);
+            setAccountBalance(AccountBalanceCurrent);
         }
         else {
             System.out.println("موجودی کافی نیست.");
@@ -18,11 +20,11 @@ public class CurrentAccount extends BankAccount{
     }
     @Override
     public void TransferC2C(float num , BankAccount Receiver){
-        float AccountBalanceCurrent=GetAccountBalance();
+        float AccountBalanceCurrent=getAccountBalance();
         if(AccountBalanceCurrent+OverDraftLimit>=num) {
             AccountBalanceCurrent -= num;
-            Receiver.SetAccountBalance(Receiver.GetAccountBalance()+num);
-            SetAccountBalance(AccountBalanceCurrent);
+            Receiver.setAccountBalance(Receiver.getAccountBalance()+num);
+            setAccountBalance(AccountBalanceCurrent);
         }
         else {
             System.out.println("موجودی کافی نیست.");
@@ -30,6 +32,10 @@ public class CurrentAccount extends BankAccount{
     }
     @Override
     public String ShowAccountInfo(){
-        return "Owner's Name:"+" "+AccountOwnerName+" " + "Account Number:"+" "+GetAccountNumber()+"Account Balance"+" "+GetAccountBalance() +"OverDraftLimit"+" "+OverDraftLimit;
+        return "Owner's Name:"+" "+AccountOwnerName+" " + "Account Number:"+" "+getAccountNumber()+"Account Balance"+" "+getAccountBalance() +"OverDraftLimit"+" "+OverDraftLimit;
     }
+    public void setOverDraftLimit(double overDraftLimit) {
+        OverDraftLimit = overDraftLimit;
+    }
+
 }

@@ -1,3 +1,5 @@
+package entity;
+
 public abstract class BankAccount {
     private final int AccountNumber;
     private float AccountBalance;
@@ -7,8 +9,20 @@ public abstract class BankAccount {
         this.AccountBalance=AccountBalance;
         this.AccountOwnerName=AccountOwnerName;
     }
+
+    public int getAccountNumber() {
+        return AccountNumber;
+    }
+
+    public float getAccountBalance() {
+        return AccountBalance;
+    }
+
+    public void setAccountBalance(float accountBalance) {
+        AccountBalance = accountBalance;
+    }
     public void Deposit(float num){
-            AccountBalance += num;
+        AccountBalance += num;
     }
     public void Withdraw(float num ){
         if(AccountBalance>=num) {
@@ -27,18 +41,11 @@ public abstract class BankAccount {
             System.out.println("موجودی کافی نیست.");
         }
     }
+
+
     public abstract String ShowAccountInfo();
 
-    public void SetAccountBalance(float num1){
-        AccountBalance=num1;
+    public String getAccountOwnerName() {
+        return AccountOwnerName;
     }
-    public float GetAccountBalance(){
-        return AccountBalance;
-    }
-    public int GetAccountNumber(){
-        return AccountNumber;
-    }
-
-
-
 }

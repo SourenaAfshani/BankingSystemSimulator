@@ -1,14 +1,30 @@
+import dao.AccountDao;
+import dao.AccountDaoImpl;
+import dao.TransactionDao;
+import dao.TransactionDaoImpl;
+import service.BankAccountService;
+import service.BankAccountServiceImp;
+import entity.CurrentAccount;
+import entity.DepositAccount;
+import entity.BankAccount;
+import entity.Transaction;
+import service.TransactionService;
+import service.TransactionServiceImpl;
+
 import java.util.Scanner;
 import java.util.Random;
 import java.util.ArrayList;
+
 
 
 public class Main {
     public static void main(String[] args) {
         Scanner input=new Scanner(System.in);
         Random random = new Random();
-        ArrayList<BankAccount> Accounts=new ArrayList<BankAccount>();
-        ArrayList<Transaction> Transactions=new ArrayList<Transaction>();
+        AccountDao accountDao = new AccountDaoImpl();
+        TransactionDao transactionDao = new TransactionDaoImpl();
+        BankAccountService bankAccountService = new BankAccountServiceImp(accountDao,transactionDao);
+        TransactionService transactionService = new TransactionServiceImpl(transactionDao);
         SourenaBankingProject:
         while(true){
             Menu();
@@ -25,223 +41,128 @@ public class Main {
                     if(AccountType==1){
                         System.out.println("مقدار سود مدنظر برای این حساب بلند مدت را وارد کنید");
                         float InterestRate=input.nextFloat();
-                        Accounts.add(new DepositAccount(AccountNumber,AccountBalance,AccountOwnerName,InterestRate));
+                        bankAccountService.createAccount(new DepositAccount(AccountNumber, AccountBalance, AccountOwnerName, InterestRate));
                         System.out.println("حساب جدید با موفقیت ثبت شد.");
                     }
                     else if(AccountType==2){
                         System.out.println("مقدار سقف اضافه برداشت را برای این حساب جاری وارد کنید");
                         double OverDraftLimit=input.nextDouble();
-                        Accounts.add(new CurrentAccount(AccountNumber,AccountBalance,AccountOwnerName,OverDraftLimit));
+                        bankAccountService.createAccount(new CurrentAccount(AccountNumber,AccountBalance,AccountOwnerName,OverDraftLimit));
                         System.out.println("حساب جدید با موفقیت ثبت شد.");
                     }
                     break ;
                 case 2:
-                    for(int i=0;i<Accounts.size();i++){
-                        System.out.println("َAccount Creator:"+Accounts.get(i).AccountOwnerName+"   ");
-                        if(Accounts.get(i) instanceof DepositAccount){
-                            System.out.println("Account Type is DepositAccount ");
-                        }
-                        else if(Accounts.get(i) instanceof CurrentAccount){
-                            System.out.println("Account Type is CurrentAccount ");
-
-                        }
-                        System.out.println("َAccount Number:"+Accounts.get(i).GetAccountNumber()+"   ");
-                        System.out.println("َAccount Balance:"+Accounts.get(i).GetAccountBalance()+"   ");
-
+                    ArrayList<BankAccount> accounts = bankAccountService.findAllAccounts();
+                    for(int i=0;i<accounts.size();i++){
+                        System.out.println(
+                                accounts.get(i).ShowAccountInfo()
+                        );
 
                     }
                     break ;
                 case 3:
                     System.out.println("شماره ی کارتی که قصد واریز وجه را به آن دارید وارد کنید (8رقمی)");
                     int AccountNumberInput=input.nextInt();
-                    boolean AccountFound=false;
-                    for (int i=0;i<Accounts.size();i++) {
-                        if (Accounts.get(i).GetAccountNumber() == AccountNumberInput) {
                             System.out.println("مبلغ مورد نظر برای واریزی را وارد کنید");
                             float TransferringValue= input.nextFloat();
-                            Accounts.get(i).Deposit(TransferringValue);
-                            System.out.println("New AccountBalance:"+"     "+Accounts.get(i).GetAccountBalance());
-                            AccountFound=true;
-                            Transactions.add(new Transaction("Deposit",Accounts.get(i),TransferringValue));
+                    bankAccountService.deposit(AccountNumberInput, TransferringValue);
                             break;
-                        }
-
-
-
-                    }
-                    if(AccountFound==false) {
-                        System.out.println("شماره کارت اشتباه است و در سامانه ثبت نشده است");
-                    }
-                    break;
                 case 4 :
                     System.out.println("شماره کارتی که قصد واریز وجه را به آن دارید را وارد کنید(8 رقمی)");
                     int AccountNumberInput2=input.nextInt();
-                    boolean AccountFound2=false;
-                    for (int i = 0; i<Accounts.size(); i++) {
-                        if(Accounts.get(i).GetAccountNumber()==AccountNumberInput2){
-                            System.out.println("مبلغی که میخواهید برداشت شود را وارد کنید.");
-                            float TransferringValue2=input.nextFloat();
-                            Accounts.get(i).Withdraw(TransferringValue2);
-                            Transactions.add(new Transaction("ٌWithDraw",Accounts.get(i),TransferringValue2));
-                            AccountFound2=true;
-                            break;
-
-                        }
-
-                    }
-                    if(AccountFound2==false){
-                        System.out.println("حساب مورد نظر پیدا نشد");
-                    }
+                    System.out.println("مبلغی که میخواهید برداشت شود را وارد کنید.");
+                    float TransferringValue2=input.nextFloat();
+                    bankAccountService.withdraw(AccountNumberInput2,TransferringValue2);
                     break;
                 case 5:
-                    BankAccount Sender=null;
-                    BankAccount Receiver=null;
                     System.out.println("شماره کارت مبدا را وارد کنید.");
                     int TransferFirstC=input.nextInt();
                     System.out.println("شماره کارت مقصد را وارد کنید");
                     int TransferSecondC=input.nextInt();
-                    for (int i = 0; i<Accounts.size() ; i++) {
-                        if(Accounts.get(i).GetAccountNumber()==TransferFirstC){
-                            Sender=Accounts.get(i);
-                            break;
-                        }
-
-                    }
-                    if (Sender == null) {
-                        System.out.println("شماره کارت مبدا اشتباه است");
-                    }
-                    for(int i=0;i<Accounts.size();i++){
-                        if(Accounts.get(i).GetAccountNumber()==TransferSecondC){
-                            Receiver=Accounts.get(i);
-                            break;
-                        }
-                    }
-                    if (Receiver==null) {
-                        System.out.println("شماره کارت مقصد اشتباه است");
-                    }
-                    if(Sender!=null && Receiver!=null) {
-                        if(Sender.GetAccountNumber()!=Receiver.GetAccountNumber()){
-                            System.out.println("مبلغ انتقال را وارد کنید.");
-                            float TransferFee = input.nextFloat();
-                            Sender.TransferC2C(TransferFee, Receiver);
-                            Transactions.add(new Transaction("Transfer",Sender,Receiver,TransferFee));
-                        }
-                        else {
-                            System.out.println("شماره کارت مبدا و مقصد نباید یکی باشد");
-                        }
-                    }
+                    System.out.println("مبلغ تراکنش را وارد کنید");
+                    float TransferValue=input.nextFloat();
+                   bankAccountService.TransferC2C(TransferFirstC,TransferSecondC,TransferValue);
                     break ;
                 case 6:
                     System.out.println("شماره کارت را وارد کنید");
-                    boolean AccountNumberFound=false;
-                    int CardNumberInput=input.nextInt();
-                    for(int i=0;i<Accounts.size();i++){
-                        if(Accounts.get(i).GetAccountNumber()==CardNumberInput){
-                            System.out.println("Account Owner:"+" "+Accounts.get(i).AccountOwnerName);
-                            System.out.println("Account Number:"+" "+Accounts.get(i).GetAccountNumber());
-                            System.out.println("Account Balance:"+" "+Accounts.get(i).GetAccountBalance());
-                            AccountNumberFound=true;
-                            break ;
-                        }
-
-                    }
-                    if(AccountNumberFound==false){
-                        System.out.println("شماره کارت وارد شده در سامانه موجود نیست");
-                    }
+                    int AccountNumberInput3=input.nextInt();
+                    accountDao.findByAccountNumber(AccountNumberInput3);
                     break ;
                 case 7:
-                    System.out.println("شماره کارت حساب مورد نظر خود را وارد کنید.");
-                    int CardNumberInput2= input.nextInt();
-                    boolean AccountNumberFound2=false;
-                    for(int i=0;i<Accounts.size();i++){
-                        if(Accounts.get(i).GetAccountNumber()==CardNumberInput2){
-                            AccountNumberFound2=true;
                             Case7Menu();
                             int Case7Input= input.nextInt();
                             switch (Case7Input){
                                 case 1:
-                                    if(Accounts.get(i) instanceof DepositAccount){
-                                        System.out.println("یک نرخ سقف برداشت برای حساب جاری وارد کنید");
-                                        double OverDraftLimit= input.nextDouble();
-                                        Accounts.set(i,new CurrentAccount(Accounts.get(i).GetAccountNumber(),
-                                                Accounts.get(i).GetAccountBalance(),
-                                                Accounts.get(i).AccountOwnerName,
-                                                OverDraftLimit));
+                                    System.out.println("شماره حساب را وارد کنید:");
+                                    int accountNumber = input.nextInt();
 
-                                    }
-                                    else if(Accounts.get(i) instanceof CurrentAccount){
-                                        System.out.println("نرخ سود برای حساب بلند مدت وارد کنید");
-                                        float InterestRateInput1=input.nextFloat();
-                                        Accounts.set(i,new DepositAccount(Accounts.get(i).GetAccountNumber(),
-                                                Accounts.get(i).GetAccountBalance(),
-                                                Accounts.get(i).AccountOwnerName,
-                                                InterestRateInput1));
+                                    System.out.println("نوع حساب جدید را انتخاب کنید:");
+                                    System.out.println("1. حساب جاری");
+                                    System.out.println("2. حساب سپرده");
 
+                                    int accountType = input.nextInt();
+                                    if (accountType == 1) {
+                                        System.out.println("سقف اضافه برداشت را وارد کنید:");
+                                        double overDraftLimit = input.nextDouble();
+
+                                        bankAccountService.changeToCurrentAccount(
+                                                accountNumber, overDraftLimit);
+
+                                    } else if (accountType == 2) {
+
+                                        System.out.println("نرخ سود را وارد کنید:");
+                                        float interestRate = input.nextFloat();
+
+                                        bankAccountService.changeToDepositAccount(accountNumber, interestRate);
+                                    } else {
+                                        System.out.println("گزینه نامعتبر است.");
                                     }
                                     break;
+
                                 case 2 :
-                                    boolean AccountIsDeposit=false;
-                                    if(Accounts.get(i) instanceof DepositAccount){
-                                        AccountIsDeposit=true;
-                                        System.out.println("نرخ سود جدید وارد کنید");
-                                        float InterestRateInput2=input.nextFloat();
-                                        ((DepositAccount) Accounts.get(i)).InterestRate=InterestRateInput2;
-                                        System.out.println("نرخ سود جدید با موفقیت ثبت شد");
-                                        break;
-                                    }
-                                    if(AccountIsDeposit==false){
-                                        System.out.println("حساب شما بلند مدت نیست در نتیجه امکان تغییر سود وجود ندارد");
-                                    }
+                                    System.out.println("شماره حساب را وارد کنید:");
+                                    int depositAccountNumber = input.nextInt();
+
+                                    System.out.println("نرخ سود جدید را وارد کنید:");
+                                    float interestRate = input.nextFloat();
+
+                                    bankAccountService.changeInterestRate(depositAccountNumber, interestRate);
+
                                     break;
                                 case 3:
-                                    boolean AccountIsCurrent=false;
-                                    if(Accounts.get(i) instanceof CurrentAccount){
-                                        AccountIsCurrent=true;
-                                        System.out.println("نرخ سقف برداشت جدید را وارد کنید");
-                                        double OverDraftLimitInput=input.nextDouble();
-                                        ((CurrentAccount) Accounts.get(i)).OverDraftLimit=OverDraftLimitInput;
-                                        System.out.println("نرخ سقف برداشت جدید ثبت شد");
-                                        break ;
-                                    }
-                                    if(!AccountIsCurrent){
-                                        System.out.println("حساب جاری نیست پس امکان تغییر نرخ سقف برداشت وجود ندارد");
-                                    }
+                                    System.out.println("شماره حساب را وارد کنید:");
+                                    int currentAccountNumber = input.nextInt();
+                                    System.out.println("سقف اضافه برداشت جدید را وارد کنید:");
+                                    double overDraftLimit = input.nextDouble();
+                                    bankAccountService.changeOverDraftLimit(currentAccountNumber, overDraftLimit);
+
                                     break;
                                 case 4:
                                     break;
 
                             }
 
-                        }
-                    }
-                    if(AccountNumberFound2==false){
-                        System.out.println("شماره کارت اشتباه است");
-                    }
-                    break;
                 case 8:
                     System.out.println("شماره کارت حساب مورد نظر خود را وارد کنید.");
-                    int CardNumberInput3= input.nextInt();
-                    boolean AccountNumberFound3=false;
-                    for(int i=0;i<Accounts.size();i++){
-                        if(Accounts.get(i).GetAccountNumber()==CardNumberInput3){
-                            AccountNumberFound3=true;
-                            Accounts.remove(i);
-                            System.out.println("حساب با موفقیت حذف شد");
-                            break;
-                        }
+                    int cardNumberInput3 = input.nextInt();
+                    BankAccount account = bankAccountService.findAccount(cardNumberInput3);
+                    if(account != null){
+                        bankAccountService.deleteAccount(cardNumberInput3);
+                        System.out.println("حساب با موفقیت حذف شد");
                     }
-                    if(!AccountNumberFound3){
+                    else{
                         System.out.println("شماره کارت اشتباه است");
                     }
                     break;
                 case 9:
                     int DepositCount=0;
                     int CurrentCount=0;
-                    for(int i=0;i<Accounts.size();i++){
-                        if(Accounts.get(i) instanceof DepositAccount){
+                    ArrayList<BankAccount> accounts2 = bankAccountService.findAllAccounts();
+                    for(int i=0;i<accounts2.size();i++){
+                        if(accounts2.get(i) instanceof DepositAccount){
                             DepositCount++;
                         }
-                        else if(Accounts.get(i) instanceof CurrentAccount){
+                        else if(accounts2.get(i) instanceof CurrentAccount){
                             CurrentCount++;
                         }
                     }
@@ -250,20 +171,21 @@ public class Main {
                     break ;
 
                 case 10:
-                    BankAccount[] TempArray=new BankAccount[Accounts.size()];
-                    BankAccount[] TempArray2=new BankAccount[Accounts.size()];
+                    ArrayList<BankAccount> accounts3 = bankAccountService.findAllAccounts();
+                    BankAccount[] TempArray=new BankAccount[accounts3.size()];
+                    BankAccount[] TempArray2=new BankAccount[accounts3.size()];
                     int ArrayIndex=0;
-                    int RegisteredAccountsTemp =Accounts.size();
+                    int RegisteredAccountsTemp =accounts3.size();
 
-                    for(int i=0;i<Accounts.size();i++){
-                        TempArray[i]=Accounts.get(i);
+                    for(int i=0;i<accounts3.size();i++){
+                        TempArray[i]=accounts3.get(i);
                     }
                     while(RegisteredAccountsTemp>0){
                         int HighestIndex=0;
                         for (int i = 1; i < RegisteredAccountsTemp; i++) {
 
-                            if (TempArray[i].GetAccountBalance() >
-                                    TempArray[HighestIndex].GetAccountBalance()) {
+                            if (TempArray[i].getAccountBalance() >
+                                    TempArray[HighestIndex].getAccountBalance()) {
 
                                 HighestIndex = i;
                             }
@@ -277,13 +199,14 @@ public class Main {
 
                         TempArray[RegisteredAccountsTemp] = null;
                     }
-                    for (int i=0;i<Accounts.size();i++){
+                    for (int i=0;i<accounts3.size();i++){
                         System.out.println(TempArray2[i].ShowAccountInfo());
                     }
                     break;
                 case 11:
-                    for(int i=0;i<Transactions.size();i++){
-                        System.out.println(Transactions.get(i).ShowTransactionInfo());
+                    ArrayList<Transaction> transactions = transactionService.findAllTransactions();
+                    for(int i = 0; i < transactions.size(); i++){
+                        System.out.println(transactions.get(i).ShowTransactionInfo());
                     }
                     break;
                 case 12:
